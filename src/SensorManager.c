@@ -82,8 +82,8 @@ static void sensor_manager_init(uint8_t sensor_pin)
 uint8_t sensor_manager_check_event(void)
 {
     static uint8_t s_event_time_saved = 0U;
-    static uint32_t s_sensor_propper_event = 0U;
-    static uint32_t s_last_valid_event = 0U;
+    static uint8_t s_sensor_propper_event = 0U;
+    static uint8_t s_last_valid_event = 0U;
     if(s_sensor_state_changed)
     {
         if(s_event_time_saved == 0U)
