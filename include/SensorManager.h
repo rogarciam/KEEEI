@@ -9,6 +9,11 @@
 
 # include <stdio.h>
 
+typedef struct {
+    uint8_t evento_detectado;   // 1 si hay evento, 0 si no
+    uint8_t estado_actual;      // 1 = sensor activo, 0 = inactivo
+} sensor_evento_t;
+
 /**
  * @brief Escribe un valor en la memoria NVS.
  * @param estado El valor a escribir de tipo uint8_t.
@@ -25,18 +30,20 @@ uint8_t sensor_manager_nvs_read(void);
 /**
  * @brief Inicializa el gestor de sensores.
  * @param sensor_pin El pin GPIO del sensor final de carrera.
- * @note Configura el pin como entrada con resistencia pull-up y establece la interrupción por cambio de estado.
- *       la función también inicializa la memoria NVS.
+ * @note Configura el pin como entrada SIN resistencia pull-up interna 
+ *       (requerida para GPIOs input-only como GPIO 34, 36, 39).
+ *       CRÍTICO: Añadir resistencia pull-up externa de 10kΩ entre el pin y VCC (3.3V).
+ *       Establece la interrupción por cambio de estado e inicializa la memoria NVS.
  */
 void sensor_manager_init(uint8_t sensor_pin);
 
 /**
  * @brief Verifica si ha ocurrido un evento en el sensor y actualiza la variable estado global del sensor.
- * @return 1U si ha ocurrido un evento válido, 0U en caso contrario.
+ * @param[out] evento Puntero a estructura donde se almacenará el resultado.
  * @note esta función implementa un mecanismo de debounce para evitar lecturas erróneas debido a rebotes del sensor.
  *       Debe ser llamada periódicamente en el bucle principal para detectar cambios de estado.
  */
-uint8_t sensor_manager_check_event(void);
+void sensor_manager_check_event(sensor_evento_t* evento);
 
 /**
  * @brief Obtiene el estado actual del sensor.
