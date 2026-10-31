@@ -1,5 +1,5 @@
 /**
- * @file LedManager.cpp
+ * @file LedManager.c
  * @brief Archivo de implementación del controlador de leds.
  * @author Romgm
  */
@@ -20,7 +20,7 @@
  * @param green Estado del led verde (true = encendido, false = apagado).
  * @param red Estado del led rojo (true = encendido, false = apagado).
  */
- void set_physical_leds(bool green, bool red) {
+ static void set_physical_leds(bool green, bool red) {
      digitalWrite(s_green_led_pin, green ? HIGH : LOW);
      digitalWrite(s_red_led_pin, red ? HIGH : LOW);
  }
