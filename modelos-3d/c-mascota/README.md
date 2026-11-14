@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="img/onshape-keko.png" width="360" alt="Keko, el robotito tragallaves">
+<img src="img/carcasa-c.gif" width="420" alt="Keko girando y despiezándose">
 
 # Carcasa C · Keko
 
@@ -47,6 +47,8 @@ puede sacar en tres colores con una impresora de un solo extrusor.
 - [`carcasa_c.fs`](carcasa_c.fs): modelo paramétrico de Onshape (feature
   `carcasaKeeeiC`). La cara, la peana y las orejas tienen sus propios
   parámetros.
+- [`stl/`](stl): las 9 piezas listas para laminar, en posición de montaje
+  (gíralas en el laminador).
 - [`detalles-tecnicos.md`](detalles-tecnicos.md): croquis, parámetros nuevos,
   montaje y auditoría (vuelco incluido).
 
