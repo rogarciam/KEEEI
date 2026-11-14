@@ -1,6 +1,6 @@
 # 0005. Carcasa A: dividirla en módulos según la orientación de impresión
 
-- Estado: Propuesta
+- Estado: Aceptada (2026-11-14). Implementada en el FeatureScript; pendiente de compilar en Onshape
 - Fecha: 2026-11-14
 
 ## Contexto
@@ -20,8 +20,8 @@ ajuste o el aspecto.
 | Módulo | Contenido | Orientación | Unión |
 |---|---|---|---|
 | 1. Cuerpo | Carcasa sin el mecanismo: paredes, tetones, postes, USB y ventilación | Cara frontal abajo (como ahora) | — |
-| 2. **Cartucho del mecanismo** | Camisa de la ranura, guía del empujador y las dos baldas del switch | **Tumbado, con una cara de la ranura sobre la cama**: sin puente y con la superficie de deslizamiento lisa | Entra por detrás en unos carriles del cuerpo; pegado + 2 pines de centrado |
-| 3. **Frontal** | Placa con el rebaje del QR y los agujeros de los LED | Sobre la cama | Pegada en un rebaje del cuerpo, con un reborde de centrado de 0,6 mm |
+| 2. **Cartucho del mecanismo** | Tubo cerrado de la ranura, guía del empujador, las dos baldas del switch y la franja central del techo | **Tumbado sobre su costado -X**: las caras de la ranura quedan verticales, con las capas a lo largo del deslizamiento; puentes de 3,5 mm (techo del tubo) y 6,2 mm (guía) | Entra por detrás y la franja de techo rellena una muesca del cuerpo. Apoya en un nervio de la pared frontal, que fija su altura; se pega, y la tapa trasera le impide salir hacia atrás |
+| 3. **Frontal** | Placa de 1,2 mm con el rebaje del QR (0,4 mm) y los LED, con un margen de 1,6 mm | Cara vista sobre la cama | Pegada en un rebaje de 1,2 mm del cuerpo (quedan 0,8 mm de pared), con 0,15 mm de holgura por lado |
 | 4. Tapa trasera | Sin cambios | Cara de pared abajo | 4 tornillos M3 + insertos (desmontable) |
 | 5. Empujador | Sin cambios | De pie | Suelto |
 
@@ -40,6 +40,13 @@ Inconvenientes:
   puede, porque el llavero es plano y necesita una ranura rectangular.
 - **Imprimir con soportes dentro de la ranura**: quedan restos en la superficie por la que desliza el llavero. Descartada.
 
+## Cambios respecto al diseño anterior
+- El fondo crece 1,2 mm, porque el cartucho cierra la ranura por delante con su propia pared.
+- El techo del cuerpo tiene una muesca abierta hacia atrás, en lugar de una ventana; así no hay puente al imprimirlo.
+- Las baldas del switch pasan a medir lo mismo que el cartucho (24,9 mm); el switch, de 20 mm, sigue cabiendo, y hay una comprobación nueva para ello.
+- Modo de pruebas: «Prueba mecanismo» pasa a ser «Prueba encaje cartucho» (muesca, pared frontal y nervio). El mecanismo se prueba con el cartucho real.
+
 ## Pendiente
-Aprobación. Después: modificar el FeatureScript en Onshape, hacer una pieza de
-prueba del encaje del cartucho y exportar los STL.
+1. Compilar en Onshape y revisar avisos, también con los parámetros en sus límites.
+2. Imprimir la prueba de encaje y el cartucho.
+3. Exportar los STL de las 5 piezas.

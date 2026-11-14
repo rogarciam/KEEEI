@@ -10,15 +10,25 @@ rodillo del microswitch KW12-3. Un tope en el empujador protege la palanca
 - Material de referencia: PETG, boquilla de 0,4 mm, capa de 0,2 mm
 - Montaje: dos ojales en la tapa trasera para colgarla en la pared
 
-## Piezas actuales y orientación de impresión
+## Piezas y orientación de impresión (ADR 0005)
 
-| Pieza | Orientación | ¿Soportes? | Observaciones |
+| Pieza | Color sugerido | Orientación | ¿Soportes? |
 |---|---|---|---|
-| Carcasa frontal | Cara frontal sobre la cama | No | Ver el puente crítico más abajo |
-| Tapa trasera | Cara de pared sobre la cama | No | Ojales, avellanados y escuadras sin voladizos |
-| Empujador | De pie, sobre la cara trasera del tope | No | Las rampas se estrechan hacia arriba |
+| Cuerpo | Azul eléctrico | Cara frontal sobre la cama | No |
+| Cartucho mecanismo | Azul o blanco | Tumbado sobre su costado izquierdo | No (puentes ≤ 6,2 mm) |
+| Frontal | Blanco | Cara vista sobre la cama | No |
+| Tapa trasera | Azul eléctrico | Cara de pared sobre la cama | No |
+| Empujador | Cualquiera | De pie, sobre la cara trasera del tope | No |
 
-## Revisión con las reglas de FDM (2026-11-14)
+**Montaje:** 1) insertos M3 en el cuerpo; 2) empujador en la guía y switch
+atornillado en el cartucho; 3) cartucho dentro del cuerpo por detrás hasta que
+apoye en el nervio, pegado; 4) frontal pegado y los LED desde dentro;
+5) protoboard en la tapa y tapa atornillada.
+
+> ⚠️ Esta versión modular **todavía no se ha compilado en Onshape**. Los STL de
+> `stl/pruebas/` son de la versión anterior, de 3 piezas.
+
+## Revisión con las reglas de FDM de la versión de 3 piezas (2026-11-14)
 
 Orientación de la carcasa frontal: el eje Y del modelo es vertical en la impresora
 y la cavidad queda abierta hacia arriba.
@@ -35,5 +45,5 @@ y la cavidad queda abierta hacia arriba.
 
 **Conclusión:** la carcasa ya se imprime casi sin soportes. Los únicos puntos
 débiles están en el **mecanismo** (puntos 2 y 7), que además es lo que más se
-recalibra. La propuesta para modularizarla está en la
+recalibra. La solución adoptada se explica en la
 [ADR 0005](../../docs/decisiones/0005-carcasa-a-modular.md).
