@@ -6,8 +6,8 @@ USB-C, insertos M3 y holguras. Cambia la forma exterior, el montaje en la pared
 y la posición de los LED.
 
 - Fuente: [`carcasa_b.fs`](carcasa_b.fs) (FeatureScript 3112, feature `carcasaKeeeiB`)
-- Medidas exteriores con los valores por defecto: unos **64 × 49 × 93 mm**
-  (ancho × fondo × alto, con el frontal y sin la pletina)
+- Medidas exteriores con los valores por defecto: **64 × 48,8 × 93 mm**
+  (ancho × fondo × alto, con el frontal; la pletina queda escondida detrás)
 - Material de referencia: PETG, boquilla de 0,4 mm, capa de 0,2 mm
 - Holguras: los mismos parámetros y valores que la A (`fitSlide`, `fitFirm`,
   `fitSw`, `fitGuide`, pasadores de Ø1,9 mm). Al calibrar la A
@@ -64,13 +64,16 @@ dos LED.
 
 ## Montaje en la pared: pletina de colgar (tipo *French cleat*)
 
-1. Se atornilla la **pletina** a la pared (24,8 × 9,75 × 4 mm). Su canto superior
-   tiene un bisel de 45° que baja hacia la pared.
+1. Se atornilla la **pletina** a la pared (24,8 × 9,75 × 4 mm, 2 tornillos de 3,5 mm
+   avellanados a 14 mm). Su canto superior tiene un bisel de 45° de 2 mm que baja
+   hacia la pared.
 2. La concha trasera tiene en su cara de pared un **bolsillo** con el bisel
-   contrario. Se apoya la carcasa contra la pared unos 2 mm por encima y se deja
+   contrario. Se apoya la carcasa contra la pared unos 2,25 mm por encima y se deja
    **deslizar hacia abajo**: el labio del bolsillo entra detrás del bisel y el
    peso empuja la carcasa contra la pared.
-3. Para descolgarla se levanta 2 mm y se separa de la pared.
+3. Para descolgarla se levanta 2,25 mm y se separa de la pared. La uña del
+   bolsillo engancha 1,4 mm: sus primeros 0,6 mm junto a la pared son rectos para
+   que no acabe en filo sobre la cama.
 
 El bolsillo es un rebaje en la cara que apoya en la cama. Su techo es un puente
 de 9,5 mm (el máximo admitido es 10), y su esquina inferior lleva un chaflán de
@@ -97,7 +100,67 @@ también sus cables.
 6. Concha trasera sobre la frontal (el labio centra), con 4 tornillos M3 × 25.
 7. Pletina en la pared y carcasa colgada.
 
-## Auditoría
+## Medidas por pieza (valores por defecto)
 
-Los resultados de la auditoría automática están más abajo (sección
-«Auditoría automática»).
+| Pieza | Exterior (X × Y × Z) | Volumen |
+|---|---|---|
+| Concha frontal | 64 × 38,6 × 89,6 mm | 23,5 cm³ |
+| Concha trasera | 64 × 20,3 × 93 mm | 24,2 cm³ |
+| Cartucho mecanismo | 25,7 × 33,2 × 31,6 mm | 5,9 cm³ |
+| Frontal | 33,6 × 1,6 × 35,5 mm | 1,5 cm³ |
+| Empujador | 12 × 10,4 × 5,7 mm | 0,5 cm³ |
+| Pletina de pared | 24,8 × 4 × 9,75 mm | 0,7 cm³ |
+
+Plano de unión a 17,25 mm de la cara interior trasera, por el eje del paso USB.
+Cada concha se queda con media abertura del USB, abierta hacia el plano de
+unión, así que no hay puente.
+
+## Auditoría automática de imprimibilidad (2026-11-14)
+
+Se hizo con FeatureScript en Onshape (lambda con `test_featurescript`), pieza a
+pieza y en su orientación de impresión. Se midieron las normales de cada cara
+en una rejilla de 4 × 4, los puentes, los espesores por rayos, los solapes entre
+las 15 parejas de piezas, la inserción del cartucho (66 pasos de 0,5 mm) y el
+gesto de colgar la carcasa en la pletina.
+
+| Pieza | Resultado |
+|---|---|
+| Concha frontal | ✅ Superficie exterior: 45° como máximo. El labio nace de la pared con un chaflán de 45°. Solo hay 2 puentes de Ø1,9 mm, en los pasadores del frontal (en la cama) |
+| Concha trasera | ✅ Techo del bolsillo de la pletina: puente de 10,0 mm (el máximo admitido). Avellanados: puente circular de Ø6,5 mm con capa de sacrificio de 0,2 mm (como en la A). Ventilación: 1,6 mm |
+| Cartucho | ✅ La franja de la cúpula no tiene voladizos (impresa de lado, el peor punto queda a 28°). Puentes de 3,6 mm (ranura) y de 4 a 6,2 mm (guía), como en la A. Agujeros de los LED de Ø3,1 mm en horizontal |
+| Frontal | ✅ Igual que en la A (0,8 mm sobre los pasadores) |
+| Empujador | ✅ Sin voladizos; espesor mínimo de 2 mm |
+| Pletina | ✅ Biseles y avellanados a 45° exactos, impresa con la cara delantera en la cama |
+| Montaje | ✅ Volumen de solape 0 en todas las parejas. Solo se tocan las caras previstas: el cartucho con el nervio y la pared delantera, el frontal con la cara delantera, las dos conchas en el plano de unión y el tope del empujador con la guía |
+| Inserción del cartucho | ✅ Entra 33 mm por detrás sin ningún choque |
+| Colgar en la pletina | ✅ Bajando 2,25 mm y separándola 5 mm, nada choca |
+
+Espesores: los únicos valores por debajo de 0,8 mm son las capas de sacrificio
+(0,2 mm, a propósito) y lecturas falsas de los rayos al cruzar en oblicuo la
+cúpula o el labio junto a los cortes. El espesor real es el de la pared: 1,2 a 2 mm.
+
+Correcciones hechas durante la auditoría:
+- El labio tenía la base en voladizo (cornisa de 1,35 mm). Ahora nace con un chaflán de 45°.
+- La uña del bolsillo acababa en filo de 45° sobre la cama (0,06 mm). Ahora tiene un tramo recto de 0,6 mm.
+- Los chaflanes de cama del cartucho y de la pletina solo se aplican a las aristas entre caras a 90°: en las inclinadas dejaban un pequeño voladizo.
+- El enganche de la pletina pasa de 1,5 a 2 mm, para que la uña siga enganchando 1,4 mm.
+
+También regeneran estas variantes: radios R36/R30 con redondeo delantero de
+10 + R18 (72 × 91 mm), y paredes de 1,6 mm con holguras de 0,4 / 0,3 mm. Con un
+llavero de 26 mm el modelo se detiene con un mensaje claro: el cartucho más
+ancho no cabe bajo la cúpula y hay que aumentar el radio superior.
+
+## Piezas de prueba (`testMode`)
+
+- **Prueba encaje cartucho**: la parte alta de la concha frontal (muesca, nervio
+  y pared delantera). Se prueba con el cartucho real.
+- **Prueba inserto M3**: el tetón lateral izquierdo con su trozo de labio.
+- **Prueba pletina**: el bolsillo de la concha trasera. Se prueba con la pletina real.
+
+## Tornillería
+
+- 4 × M3 × 25 de cabeza cilíndrica, desde la cara de pared, con 4 insertos
+  térmicos M3 (Ø4 × 6) en la concha frontal.
+- 2 × M2 × 10 para el microswitch (como en la A).
+- 2 tornillos de 3,5 mm de cabeza avellanada, con tacos, para la pletina.
+- 4 trozos de filamento de 1,75 mm: 2 para el frontal y 2 de repuesto.
