@@ -1,6 +1,6 @@
 # Plan visual de los pósteres KEEEI
 
-Estado: **propuesta, pendiente de aprobar**. No se renderiza nada hasta cerrar este plan.
+Estado: **en uso**. Los pósteres salen de `hacer_poster.py` con los renders de `modelos-3d/render/poster_render.py`.
 
 ## 1. Colores: filamentos disponibles y fondo
 
@@ -78,7 +78,12 @@ Las **flechas no se renderizan**: se dibujan en el póster (vectores, nítidas a
 - Póster: SVG en el repositorio (`docs/poster/`), exportado a PDF/PNG a 300 ppp. Se puede importar en Figma para retocarlo.
 
 ## 8. Lo que falta
-- [ ] Enlace público del canal de Telegram (para el QR).
-- [ ] Logo vectorial de IEEE SB Unizar (SVG o PDF).
-- [ ] Permiso para exportar desde Onshape los STL de B y C.
-- [ ] Aprobar colores, planos y textos.
+- [x] Enlace del canal de Telegram: QR en `img/qr-telegram.svg`.
+- [x] Logo de IEEE SB Unizar (JPEG; `img/logo-ieee-sb-unizar-blanco.png` es la versión en blanco para fondo oscuro). Si aparece el vectorial, se cambia.
+- [x] STL de B y C exportados desde Onshape.
+- [ ] Revisar colores, planos y textos sobre los pósteres impresos.
+
+## 9. Cambios respecto al plan al hacerlo
+- El llavero es una chapa de 22 × 40 × 3 mm con anilla, sin llave: con llave el dibujo se leía peor.
+- El LED verde sale pálido en Blender (la curva AgX desatura los verdes intensos), así que el halo se refuerza en el póster con un degradado vectorial.
+- En lugar de un «③ consulta Telegram» abstracto, una burbuja del canal junto a la carcasa enseña el mensaje que llega.
