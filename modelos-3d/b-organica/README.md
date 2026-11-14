@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="img/onshape-canto-rodado.png" width="380" alt="Carcasa B, canto rodado">
+<img src="img/carcasa-b.gif" width="420" alt="Carcasa B girando y despiezándose">
 
 # Carcasa B · Canto rodado
 
@@ -47,6 +47,8 @@ descolgarla, la subes y la sacas.
 
 - [`carcasa_b.fs`](carcasa_b.fs): modelo paramétrico de Onshape (feature
   `carcasaKeeeiB`). Mismas holguras y parámetros que la A.
+- [`stl/`](stl): las 6 piezas listas para laminar, en posición de montaje
+  (gíralas en el laminador).
 - [`detalles-tecnicos.md`](detalles-tecnicos.md): geometría, medidas por pieza,
   auditoría y tornillería.
 
