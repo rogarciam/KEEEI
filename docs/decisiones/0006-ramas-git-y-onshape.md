@@ -12,8 +12,8 @@ repositorio como en el documento de Onshape «KEEI», sin pisarse.
 | Opción | Rama de git | Rama (workspace) de Onshape | Parte de |
 |---|---|---|---|
 | A · ranura vertical | `carcasa/a-ranura-vertical` | `Main` | — |
-| B | `carcasa/b-pildora-pared` | `Carcasa B` | Versión V3 |
-| C | `carcasa/c-totem-mesa` | `Carcasa C` | Versión V3 |
+| B | `carcasa/b-organica` | `Carcasa B` | Versión V3 |
+| C | `carcasa/c-mascota` | `Carcasa C` | Versión V3 |
 
 - **V3** («Carcasa A modular 5 piezas») corresponde al commit `49b8041`.
 - **V2** guarda la carcasa A de 3 piezas, antes de la ADR 0005.
