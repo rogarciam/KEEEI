@@ -1,6 +1,6 @@
 # 0005. Carcasa A: dividirla en módulos según la orientación de impresión
 
-- Estado: Aceptada (2026-11-14). Implementada en el FeatureScript; pendiente de compilar en Onshape
+- Estado: Aceptada (2026-11-14). Implementada y compilada en Onshape (regenera sin errores)
 - Fecha: 2026-11-14
 
 ## Contexto
@@ -47,6 +47,6 @@ Inconvenientes:
 - Modo de pruebas: «Prueba mecanismo» pasa a ser «Prueba encaje cartucho» (muesca, pared frontal y nervio). El mecanismo se prueba con el cartucho real.
 
 ## Pendiente
-1. Compilar en Onshape y revisar avisos, también con los parámetros en sus límites.
+1. ~~Compilar en Onshape~~ (hecho). Comprobar interferencias entre el cuerpo y el cartucho.
 2. Imprimir la prueba de encaje y el cartucho.
 3. Exportar los STL de las 5 piezas.

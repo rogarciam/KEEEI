@@ -6,7 +6,7 @@ rodillo del microswitch KW12-3. Un tope en el empujador protege la palanca
 (margen de reposo de 1,5 mm sobre el clic y sobrecarrera de 0,8 mm).
 
 - Fuente: [`carcasa_llaves_esp32.fs`](carcasa_llaves_esp32.fs) (FeatureScript, Onshape)
-- Medidas exteriores con los valores por defecto: **47,3 × 45,2 × 91,1 mm** (ancho × fondo × alto)
+- Medidas exteriores con los valores por defecto: **47,3 × 46,4 × 90,1 mm** (ancho × fondo × alto)
 - Material de referencia: PETG, boquilla de 0,4 mm, capa de 0,2 mm
 - Montaje: dos ojales en la tapa trasera para colgarla en la pared
 
@@ -25,8 +25,13 @@ atornillado en el cartucho; 3) cartucho dentro del cuerpo por detrás hasta que
 apoye en el nervio, pegado; 4) frontal pegado y los LED desde dentro;
 5) protoboard en la tapa y tapa atornillada.
 
-> ⚠️ Esta versión modular **todavía no se ha compilado en Onshape**. Los STL de
-> `stl/pruebas/` son de la versión anterior, de 3 piezas.
+> ✅ Compilada en Onshape el 2026-11-14: regenera sin errores ni avisos, con los
+> valores por defecto, en modo de pruebas y con tagW 26 / pared 2,4. Los chaflanes
+> se aplican. Falta comprobar interferencias entre piezas y exportar los STL:
+> los de `stl/pruebas/` son de la versión anterior, de 3 piezas.
+>
+> Límite conocido: con la protoboard de 40 mm, el llavero puede medir como mucho
+> unos 27 mm de ancho, porque si no los postes de apriete chocan con el cartucho.
 
 ## Revisión con las reglas de FDM de la versión de 3 piezas (2026-11-14)
 
