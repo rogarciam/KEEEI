@@ -19,6 +19,7 @@ alternativas se descartaron, aunque pase tiempo.
 | [0002](0002-canal-sin-bot-con-mensaje-fijado.md) | Canal de Telegram sin bot, con mensaje fijado | Aceptada |
 | [0003](0003-ramas-para-opciones-de-carcasa.md) | Una rama por opción de carcasa | Aceptada |
 | [0004](0004-licencias.md) | Licencias del repositorio | Propuesta |
+| [0005](0005-carcasa-a-modular.md) | Carcasa A: dividirla en módulos según la orientación de impresión | Propuesta |
 
 ## Plantilla
 
