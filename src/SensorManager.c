@@ -1,15 +1,14 @@
 # include <Arduino.h>
-#include "esp_attr.h"  //libería para acceso rapido a función(guardada en ram)
 #include "SensorManager.h"
 #include "nvs_flash.h" //librerías para el manejo de la memoria NVS
 #include "nvs.h"       //librerías para el manejo de la memoria NVS
 
-#define SENSOR_DEBOUNCE_MS 50U //tiempo de rebote del sensor.
-
+#define SENSOR_DEBOUNCE_MS 80U
 
 static uint8_t s_sensor_pin = 0U;
 static uint8_t s_sensor_state = 0U;
-static volatile uint8_t s_sensor_state_changed = 0U;
+static uint8_t s_lectura_candidata = 0U;
+static uint32_t s_candidata_desde_ms = 0U;
 
 //inicio de memoria nvms
 void sensor_manager_nvs_init(void)
@@ -64,60 +63,41 @@ uint8_t sensor_manager_nvs_read(void)
     return salida;
 }
 
-static void IRAM_ATTR sensor_manager_isr(void)
+static uint8_t sensor_leer_pin(void)
 {
-    s_sensor_state_changed = 1U;
+    // INPUT_PULLUP: LOW = switch cerrado a GND = llave puesta
+    return (digitalRead(s_sensor_pin) == LOW) ? 1U : 0U;
 }
 
 void sensor_manager_init(uint8_t sensor_pin)
 {
     s_sensor_pin = sensor_pin;
+    pinMode(s_sensor_pin, INPUT_PULLUP);
 
-    // IMPORTANTE: GPIO 34 no tiene pull-up interno
-    // Configurar como INPUT (sin PULLUP interno)
-    pinMode(s_sensor_pin, INPUT);
-    
-    // CRÍTICO: Añadir resistencia pull-up externa de 10kΩ en hardware
-    // entre GPIO34 y VCC (3.3V)
+    s_sensor_state = sensor_leer_pin();
+    s_lectura_candidata = s_sensor_state;
+    s_candidata_desde_ms = millis();
 
-    attachInterrupt(digitalPinToInterrupt(s_sensor_pin), sensor_manager_isr, CHANGE);
     sensor_manager_nvs_init();
-
 }
-
 
 void sensor_manager_check_event(sensor_evento_t* evento)
 {
-    static uint32_t s_last_valid_event = 0U;
-    static uint8_t s_event_time_saved = 0U;
-    static uint8_t s_sensor_propper_event = 0U;
-    
-    if(s_sensor_state_changed)
-    {
-        if(s_event_time_saved == 0U)
-        {
-            s_last_valid_event = millis();
-            s_event_time_saved = 1U;
-        }
-        else if(millis() - s_last_valid_event >= SENSOR_DEBOUNCE_MS)
-        {
-            // Lectura atómica con deshabilitación temporal de interrupciones
-            noInterrupts();  // Deshabilitar interrupciones globalmente
-            s_sensor_state = digitalRead(s_sensor_pin);
-            s_sensor_state_changed = 0U;
-            interrupts();    // Re-habilitar interrupciones
-            
-            s_event_time_saved = 0U;
-            s_sensor_propper_event = 1U;
-        }
+    uint8_t lectura = sensor_leer_pin();
+    uint32_t ahora = millis();
+
+    evento->evento_detectado = 0U;
+
+    if (lectura != s_lectura_candidata) {
+        s_lectura_candidata = lectura;
+        s_candidata_desde_ms = ahora;
+    } else if ((lectura != s_sensor_state) &&
+               ((ahora - s_candidata_desde_ms) >= SENSOR_DEBOUNCE_MS)) {
+        s_sensor_state = lectura;
+        evento->evento_detectado = 1U;
     }
-    
-    // Llenar estructura de salida de forma atómica
-    evento->evento_detectado = s_sensor_propper_event;
+
     evento->estado_actual = s_sensor_state;
-    
-    // Reset del flag de evento después de leerlo
-    s_sensor_propper_event = 0U;
 }
 
 uint8_t sensor_manager_get_state(void)
