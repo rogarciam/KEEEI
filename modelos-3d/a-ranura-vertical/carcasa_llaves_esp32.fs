@@ -9,10 +9,16 @@ import(path : "onshape/std/common.fs", version : "3112.0");
  * clic y con el llavero dentro la lleva un poco por debajo, sin llegar al final de carrera.
  *
  * Ejes:  X = ancho · Y = profundidad (Y=0 tapa trasera / pared, Y=D cara frontal) · Z = altura (Z=0 base)
- * Piezas: "Carcasa frontal" (imprimir con la cara frontal sobre la cama)
- *         "Tapa trasera"    (imprimir con la cara de pared sobre la cama)
- *         "Empujador"       (imprimir de pie, apoyado en la cara del tope; se mete por detrás antes que el switch)
- * Unión:  4 tornillos M3 desde la tapa a insertos térmicos M3 en la carcasa.
+ * Piezas (ADR 0005: módulos según la orientación de impresión, todos sin soportes):
+ *   "Cuerpo"             cara frontal sobre la cama. Techo con una muesca abierta hacia atrás para el cartucho.
+ *   "Cartucho mecanismo" tumbado sobre su costado izquierdo (-X): camisa de la ranura cerrada como un tubo,
+ *                        guía del empujador, baldas del switch y franja central del techo. Puentes de 6,2 mm como máximo.
+ *                        Entra por detrás, apoya en un nervio de la pared frontal y se pega; la tapa trasera
+ *                        le impide salir hacia atrás.
+ *   "Frontal"            placa blanca con el QR y los LED, cara vista sobre la cama; se pega en un rebaje del cuerpo.
+ *   "Tapa trasera"       cara de pared sobre la cama.
+ *   "Empujador"          de pie, apoyado en la cara del tope; se mete en la guía antes que el switch.
+ * Unión:  4 tornillos M3 desde la tapa a insertos térmicos M3 en el cuerpo.
  * Montaje en pared: 2 ojales (keyholes) en la tapa trasera.
  * Referencia de impresión: PETG, boquilla 0,4 mm, capa 0,2 mm.
  */
@@ -41,6 +47,12 @@ const PUSH_ROUND   = 0.8 * millimeter;  // redondeo de las aristas donde las ram
 const PUSH_BED_CH  = 0.3 * millimeter;  // chaflán de las aristas del empujador que apoyan en la cama
 const COUPON_CH    = 0.4 * millimeter;  // chaflán de las aristas de corte de las piezas de prueba que apoyan en la cama
 const PETG_DENSITY = 1.27;              // g/cm³, para estimar el material de las piezas de prueba
+const MIN_FLOOR    = 0.8 * millimeter;  // suelo/techo mínimo: 4 capas de 0,2 mm
+const INLAY_T      = 1.2 * millimeter;  // grosor del frontal pegado (6 capas) = profundidad de su rebaje
+const INLAY_BORDER = 1.6 * millimeter;  // margen del frontal alrededor del QR y de los LED
+const RIB_SUP_T    = 1.6 * millimeter;  // nervio de la pared frontal sobre el que apoya el cartucho
+const RIB_SUP_D    = 3 * millimeter;    // cuánto entra ese nervio hacia atrás desde la pared frontal
+const CART_BED_CH  = 0.3 * millimeter;  // chaflán de las aristas del cartucho que apoyan en la cama
 
 // ---------------- Límites de parámetros [mín, defecto, máx] en mm ----------------
 const B_WALL      = { (millimeter) : [1.2, 2.0, 5.0] } as LengthBoundSpec;
@@ -108,7 +120,7 @@ const B_EXPLODE   = { (millimeter) : [0.0, 0.0, 100.0] } as LengthBoundSpec;
 
 // Las etiquetas "Name" de los parámetros solo admiten ASCII imprimible: sin tildes, ñ ni °
 annotation { "Feature Type Name" : "Carcasa llaves ESP32",
-             "Feature Type Description" : "Carcasa de pared con ranura para llavero y microswitch de rodillo con leva lateral." }
+             "Feature Type Description" : "Carcasa de pared modular (cuerpo, cartucho del mecanismo, frontal, tapa y empujador) con ranura para llavero y microswitch de rodillo con leva lateral." }
 export const carcasaLlavesESP32 = defineFeature(function(context is Context, id is Id, definition is map)
     precondition
     {
@@ -299,12 +311,14 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
 
         // Fondo: cadena conector -> microswitch -> tope -> guía -> camisa -> ranura -> pared frontal,
         // o la pila protoboard + ESP32 (el switch queda por encima de la electrónica)
-        const D1 = definition.connSpace + leverRest + COLLAR_T + definition.guideL + SLEEVE_T + slotW + wallF;
+        // (el cartucho cierra la ranura por delante con su propia pared: SLEEVE_T más de fondo)
+        const D1 = definition.connSpace + leverRest + COLLAR_T + definition.guideL + SLEEVE_T + slotW + SLEEVE_T + wallF;
         const espFrontY = definition.pcbY + definition.pcbT + definition.headerH + definition.espFront;
-        const D2 = espFrontY + 1 * millimeter + SLEEVE_T + slotW + wallF;
+        const D2 = espFrontY + 1 * millimeter + SLEEVE_T + slotW + SLEEVE_T + wallF;
         const D = max(D1, D2);
         const ysF = D - wallF;                                               // cara interior de la pared frontal
-        const ysB = ysF - slotW;                                             // cara trasera de la ranura
+        const ysS = ysF - SLEEVE_T;                                          // cara delantera de la ranura (pared del cartucho)
+        const ysB = ysS - slotW;                                             // cara trasera de la ranura
         const yGuideB = ysB - SLEEVE_T - definition.guideL;                  // cara trasera de la guía (apoya el tope)
         const yCollarB = yGuideB - COLLAR_T;                                 // cara trasera del tope (apoya el rodillo)
         const yTip = ysB + pushOut;                                          // punta del empujador en reposo
@@ -327,6 +341,15 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
         const usbX = cx + definition.espOffX;
         const usbY = definition.pcbY + definition.pcbT + definition.headerH + definition.usbC;
         const bIn = wall + definition.bossR - BOSS_SINK;                    // centro de los tetones de las esquinas
+        // Frontal pegado: rodea el QR y los LED con un margen INLAY_BORDER
+        const qrHalf = definition.qrSize / 2 + definition.qrFit;
+        const ledHalfX = definition.leds ? definition.ledS / 2 + definition.ledD / 2 : ZERO;
+        const ledTopZ = definition.leds ? definition.ledZ + definition.ledD / 2 : ZERO;
+        const inlayHalf = max(qrHalf, ledHalfX) + INLAY_BORDER;             // medio ancho del rebaje
+        const inlayZ0 = definition.qrZ - qrHalf - INLAY_BORDER;
+        const inlayZ1 = max(definition.qrZ + qrHalf, ledTopZ) + INLAY_BORDER;
+        const inlayR = min(definition.qrR + INLAY_BORDER, inlayHalf - 0.5 * millimeter);
+        const zCart0 = zSlotBottom - SLEEVE_T;                              // cara inferior del cartucho (apoya en el nervio)
 
         // ====================== 2. COMPROBACIONES ======================
         if (pushOut > slotW - 0.4 * millimeter)
@@ -349,8 +372,8 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
             throw regenError("La protoboard es demasiado estrecha: los postes de apriete chocan con la camisa de la ranura.");
         if (definition.plugClear < 2 * definition.bossR + definition.fitFirm + FENCE_T + 0.5 * millimeter)
             throw regenError("Hueco para la clavija USB demasiado bajo: los tetones inferiores chocan con la protoboard.");
-        if (abs(swX - cx) + definition.swL / 2 + 0.5 * millimeter > cx - wall)
-            throw regenError("El microswitch no cabe a lo ancho: es demasiado largo o su rodillo está muy desplazado del centro.");
+        if (abs(swX - cx) + definition.swL / 2 + 0.5 * millimeter > sleeveHalf)
+            throw regenError("El microswitch no cabe a lo ancho del cartucho: es demasiado largo o su rodillo está muy desplazado del centro (o aumenta el ancho del llavero).");
         if (definition.swScrews && definition.holeS / 2 + M2_CLEAR / 2 > definition.swL / 2)
             throw regenError("Los agujeros de montaje del microswitch quedan fuera de su cuerpo.");
         if (usbY - definition.usbOT / 2 < 0.5 * millimeter || usbY + definition.usbOT / 2 > D - wallF - 0.5 * millimeter)
@@ -358,21 +381,24 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
         if (definition.cornerR > bIn &&
             sqrt(2) * (definition.cornerR - bIn) + max(definition.bossR, definition.cbD / 2 + 0.8 * millimeter) > definition.cornerR)
             throw regenError("Radio de esquinas demasiado grande: los tetones o los avellanados de la tapa atravesarían el canto redondeado.");
-        if (definition.qrDepth > wallF - 0.8 * millimeter)
-            throw regenError("El rebaje de la etiqueta QR es demasiado profundo para la pared frontal.");
-        if (definition.qrSize / 2 + definition.qrFit > cx - definition.cornerR)
-            throw regenError("La etiqueta QR es más ancha que la cara frontal.");
+        if (wallF - INLAY_T < MIN_FLOOR - 0.01 * millimeter)
+            throw regenError("Pared frontal demasiado fina: detrás del rebaje del frontal deben quedar 0,8 mm (pared frontal ≥ 2 mm).");
+        if (definition.qrDepth > INLAY_T - MIN_FLOOR + 0.01 * millimeter)
+            throw regenError("El rebaje de la etiqueta QR es demasiado profundo para el frontal (máximo 0,4 mm).");
+        if (inlayHalf > cx - definition.cornerR)
+            throw regenError("El frontal (QR y LED con su margen) es más ancho que la cara frontal.");
+        if (inlayZ0 < definition.chamferF + MIN_FLOOR)
+            throw regenError("El frontal queda demasiado bajo: sube la etiqueta QR.");
         if (definition.cbDepth > definition.backT - 0.8 * millimeter)
             throw regenError("El avellanado es demasiado profundo para el grosor de la tapa trasera.");
         if (zSlotBottom - SLEEVE_T < zB0)
             throw regenError("La ranura es demasiado profunda para la altura de la carcasa.");
-        if (definition.qrZ - definition.qrSize / 2 - definition.qrFit < definition.chamferF + 2 * millimeter ||
-            definition.qrZ + definition.qrSize / 2 + definition.qrFit > zSlotBottom - SLEEVE_T)
+        if (definition.qrZ + qrHalf > zCart0 - RIB_SUP_T)
             throw regenError("La etiqueta QR no cabe a esa altura en la cara frontal.");
         if (definition.leds)
         {
-            if (definition.ledZ + definition.ledD / 2 + 0.3 * millimeter > zSlotBottom - SLEEVE_T)
-                throw regenError("Los LED chocan con el fondo de la ranura: bájalos.");
+            if (ledTopZ + 0.3 * millimeter > zCart0 - RIB_SUP_T)
+                throw regenError("Los LED chocan con el nervio que sostiene el cartucho: bájalos.");
             if (definition.ledZ - definition.ledD / 2 < definition.qrZ + definition.qrSize / 2 + definition.qrFit + 0.5 * millimeter)
                 throw regenError("Los LED se solapan con la etiqueta QR.");
         }
@@ -418,24 +444,10 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
             cylY(context, id + "inner" + ("boss" ~ toString(i)), bossPts[i][0], bossPts[i][1], ZERO, ysF + EPS, definition.bossR);
         }
 
-        // Camisa de la ranura (pegada a la pared frontal y al techo)
-        caja(context, id + "inner" + "sleeve",
-            vector(cx - sleeveHalf, ysB - SLEEVE_T, zSlotBottom - SLEEVE_T),
-            vector(cx + sleeveHalf, ysF + EPS, H - wall + EPS));
-
-        // Baldas del microswitch: el switch queda atrapado entre las dos (llegan a la pared frontal para
-        // imprimirse sin voladizos). El empujador corre entre ellas.
-        caja(context, id + "inner" + "shelf",
-            vector(wall - EPS, yb, shelfTop - SHELF_T),
-            vector(W - wall + EPS, ysF + EPS, shelfTop));
-        caja(context, id + "inner" + "shelf2",
-            vector(wall - EPS, yb, shelf2Bot),
-            vector(W - wall + EPS, ysF + EPS, shelf2Bot + SHELF_T));
-
-        // Guía del empujador, pegada a la camisa de la ranura (se apoya en ella al imprimir)
-        caja(context, id + "inner" + "guide",
-            vector(cx - definition.pushW / 2 - definition.fitGuide - GUIDE_T, yGuideB, zc - hP / 2 - definition.fitGuide - GUIDE_T),
-            vector(cx + definition.pushW / 2 + definition.fitGuide + GUIDE_T, ysB - SLEEVE_T + EPS, zc + hP / 2 + definition.fitGuide + GUIDE_T));
+        // Nervio de la pared frontal sobre el que apoya el cartucho (fija su altura: su techo queda enrasado)
+        caja(context, id + "inner" + "cartRib",
+            vector(cx - sleeveHalf, ysF - RIB_SUP_D, zCart0 - RIB_SUP_T),
+            vector(cx + sleeveHalf, ysF + EPS, zCart0));
 
         // Postes que aprietan la protoboard contra los soportes de la tapa trasera
         const postX = [cx - (definition.pcbW / 2 - POST_INSET), cx + (definition.pcbW / 2 - POST_INSET)];
@@ -459,34 +471,16 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
 
         unite(context, id + "uniteBody", qUnion([bodyAt(id, bodyPoint), qCreatedBy(id + "inner", EntityType.BODY)]));
 
-        // ====================== 5. CARCASA: VACIADOS ======================
-        // Ranura del llavero (atraviesa el techo)
-        caja(context, id + "cuts" + "slot",
-            vector(cx - slotHalf, ysB, zSlotBottom),
-            vector(cx + slotHalf, ysF, H + 1 * millimeter));
-        // Agujero de la guía del empujador: atraviesa la guía y la camisa hasta la ranura
-        // (su alto coincide con el hueco entre baldas, así el empujador entra por detrás)
-        caja(context, id + "cuts" + "guideHole",
-            vector(cx - definition.pushW / 2 - definition.fitGuide, yGuideB - 1 * millimeter, zc - hP / 2 - definition.fitGuide),
-            vector(cx + definition.pushW / 2 + definition.fitGuide, ysB + 0.05 * millimeter, zc + hP / 2 + definition.fitGuide));
+        // ====================== 5. CUERPO: VACIADOS ======================
+        // Muesca del techo para el cartucho, abierta hacia atrás: en impresión (cara frontal abajo) queda abierta
+        // hacia arriba, así que no hay puente. El cartucho la rellena con su franja de techo.
+        caja(context, id + "cuts" + "roofNotch",
+            vector(cx - sleeveHalf - definition.fitFirm, -1 * millimeter, H - wall - 1 * millimeter),
+            vector(cx + sleeveHalf + definition.fitFirm, ysF, H + 1 * millimeter));
         // Agujeros para insertos térmicos
         for (var i = 0; i < 4; i += 1)
         {
             cylY(context, id + "cuts" + ("insert" ~ toString(i)), bossPts[i][0], bossPts[i][1], -1 * millimeter, definition.insertL, definition.insertD / 2);
-        }
-        // Microswitch: paso M2 en la balda inferior + piloto pasante en la superior (M2 x 10 desde abajo;
-        // la punta sale al hueco vacío de encima). Montar antes que la protoboard.
-        if (definition.swScrews)
-        {
-            for (var s in [-1, 1])
-            {
-                const hx = swX + s * definition.holeS / 2;
-                const hy = yb + definition.holeY;
-                cylZ(context, id + "cuts" + ("swHole" ~ toString(s + 1)), hx, hy,
-                     shelfTop - SHELF_T - 1 * millimeter, shelfTop + 0.1 * millimeter, M2_CLEAR / 2);
-                cylZ(context, id + "cuts" + ("swPilot" ~ toString(s + 1)), hx, hy,
-                     shelf2Bot - 0.1 * millimeter, shelf2Bot + SHELF_T + 1 * millimeter, M2_PILOT / 2);
-            }
         }
         // Paso de la clavija USB-C por la base
         caja(context, id + "cuts" + "usb",
@@ -513,15 +507,14 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
                 v += 1;
             }
         }
-        // Rebaje de la etiqueta QR en la cara frontal
-        const qrHalf = definition.qrSize / 2 + definition.qrFit;
-        caja(context, id + "cuts" + "qr",
-            vector(cx - qrHalf, D - definition.qrDepth, definition.qrZ - qrHalf),
-            vector(cx + qrHalf, D + 1 * millimeter, definition.qrZ + qrHalf));
-        opFillet(context, id + "cuts" + "qrFillet", {
-                    "entities" : qParallelEdges(qCreatedBy(id + "cuts" + "qr", EntityType.EDGE), Y_DIRECTION),
-                    "radius" : min(definition.qrR, qrHalf - 0.1 * millimeter) });
-        // Agujeros para LED
+        // Rebaje del frontal en la cara frontal (en la cama al imprimir: es un hueco en las primeras capas)
+        caja(context, id + "cuts" + "inlayPocket",
+            vector(cx - inlayHalf, D - INLAY_T, inlayZ0),
+            vector(cx + inlayHalf, D + 1 * millimeter, inlayZ1));
+        opFillet(context, id + "cuts" + "inlayPocketFillet", {
+                    "entities" : qParallelEdges(qCreatedBy(id + "cuts" + "inlayPocket", EntityType.EDGE), Y_DIRECTION),
+                    "radius" : inlayR });
+        // Agujeros para LED (atraviesan el cuerpo; el frontal lleva los suyos)
         if (definition.leds)
         {
             for (var s in [-1, 1])
@@ -532,17 +525,69 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
         }
         subtract(context, id + "doCuts", bodyAt(id, bodyPoint), qCreatedBy(id + "cuts", EntityType.BODY));
 
+        // ====================== 5b. CARTUCHO DEL MECANISMO ======================
+        // Se imprime tumbado sobre su costado -X (plano x = cx - sleeveHalf): todo crece hacia +X.
+        //  · las caras de la ranura quedan verticales, con las capas a lo largo del deslizamiento del llavero
+        //  · el techo del tubo (costado +X) es un puente de slotW (3,5 mm)
+        //  · la guía hace de puente entre las dos baldas (hP + 2·holgura ≈ 6,2 mm)
+        // Tubo de la ranura: paredes trasera, delantera, laterales y fondo
+        caja(context, id + "cart" + "tube",
+            vector(cx - sleeveHalf, ysB - SLEEVE_T, zCart0),
+            vector(cx + sleeveHalf, ysF, H));
+        // Franja central del techo: rellena la muesca del cuerpo hasta la tapa trasera, que la retiene
+        caja(context, id + "cart" + "cap",
+            vector(cx - sleeveHalf, ZERO, H - wall),
+            vector(cx + sleeveHalf, ysF, H));
+        // Baldas del microswitch (del ancho del cartucho): el switch queda atrapado entre las dos
+        caja(context, id + "cart" + "shelf",
+            vector(cx - sleeveHalf, yb, shelfTop - SHELF_T),
+            vector(cx + sleeveHalf, ysF, shelfTop));
+        caja(context, id + "cart" + "shelf2",
+            vector(cx - sleeveHalf, yb, shelf2Bot),
+            vector(cx + sleeveHalf, ysF, shelf2Bot + SHELF_T));
+        // Guía del empujador, pegada a la pared trasera del tubo
+        caja(context, id + "cart" + "guide",
+            vector(cx - definition.pushW / 2 - definition.fitGuide - GUIDE_T, yGuideB, zc - hP / 2 - definition.fitGuide - GUIDE_T),
+            vector(cx + definition.pushW / 2 + definition.fitGuide + GUIDE_T, ysB - SLEEVE_T + EPS, zc + hP / 2 + definition.fitGuide + GUIDE_T));
+        const cartPoint = vector(cx, min(yb, ysB - SLEEVE_T) / 2, H - wall / 2);   // dentro de la franja de techo
+        unite(context, id + "cartUnite", qCreatedBy(id + "cart", EntityType.BODY));
+
+        // Ranura del llavero (atraviesa el techo del cartucho)
+        caja(context, id + "cartCuts" + "slot",
+            vector(cx - slotHalf, ysB, zSlotBottom),
+            vector(cx + slotHalf, ysS, H + 1 * millimeter));
+        // Agujero de la guía del empujador: atraviesa la guía y la pared trasera del tubo hasta la ranura
+        // (su alto coincide con el hueco entre baldas, así el empujador entra por detrás)
+        caja(context, id + "cartCuts" + "guideHole",
+            vector(cx - definition.pushW / 2 - definition.fitGuide, yGuideB - 1 * millimeter, zc - hP / 2 - definition.fitGuide),
+            vector(cx + definition.pushW / 2 + definition.fitGuide, ysB + 0.05 * millimeter, zc + hP / 2 + definition.fitGuide));
+        // Microswitch: paso M2 en la balda inferior + piloto pasante en la superior (M2 x 10 desde abajo;
+        // la punta sale al hueco vacío de encima). Montar el switch en el cartucho antes de meterlo en el cuerpo.
+        if (definition.swScrews)
+        {
+            for (var s in [-1, 1])
+            {
+                const hx = swX + s * definition.holeS / 2;
+                const hy = yb + definition.holeY;
+                cylZ(context, id + "cartCuts" + ("swHole" ~ toString(s + 1)), hx, hy,
+                     shelfTop - SHELF_T - 1 * millimeter, shelfTop + 0.1 * millimeter, M2_CLEAR / 2);
+                cylZ(context, id + "cartCuts" + ("swPilot" ~ toString(s + 1)), hx, hy,
+                     shelf2Bot - 0.1 * millimeter, shelf2Bot + SHELF_T + 1 * millimeter, M2_PILOT / 2);
+            }
+        }
+        subtract(context, id + "doCartCuts", bodyAt(id, cartPoint), qCreatedBy(id + "cartCuts", EntityType.BODY));
+
         // Chaflán de entrada de la ranura
-        const bodyEdges = qOwnedByBody(bodyAt(id, bodyPoint), EntityType.EDGE);
-        const midY = (ysB + ysF) / 2;
+        const cartEdges = qOwnedByBody(bodyAt(id, cartPoint), EntityType.EDGE);
+        const midY = (ysB + ysS) / 2;
         // "try silent": si el chaflán falla solo queda el aviso propio, sin el error interno en la lista de avisos
         try silent
         {
             opChamfer(context, id + "slotChamfer", {
-                        "entities" : qUnion([qContainsPoint(bodyEdges, vector(cx, ysB, H)),
-                                             qContainsPoint(bodyEdges, vector(cx, ysF, H)),
-                                             qContainsPoint(bodyEdges, vector(cx - slotHalf, midY, H)),
-                                             qContainsPoint(bodyEdges, vector(cx + slotHalf, midY, H))]),
+                        "entities" : qUnion([qContainsPoint(cartEdges, vector(cx, ysB, H)),
+                                             qContainsPoint(cartEdges, vector(cx, ysS, H)),
+                                             qContainsPoint(cartEdges, vector(cx - slotHalf, midY, H)),
+                                             qContainsPoint(cartEdges, vector(cx + slotHalf, midY, H))]),
                         "chamferType" : ChamferType.EQUAL_OFFSETS,
                         "width" : SLOT_CHAMFER });
         }
@@ -550,6 +595,57 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
         {
             reportFeatureWarning(context, id, "No se pudo achaflanar la entrada de la ranura; el resto del modelo es válido.");
         }
+        // Chaflán en las aristas que apoyan en la cama (costado -X)
+        try silent
+        {
+            opChamfer(context, id + "cartBedChamfer", {
+                        "entities" : qCoincidesWithPlane(qOwnedByBody(bodyAt(id, cartPoint), EntityType.EDGE),
+                                                         plane(vector(cx - sleeveHalf, ZERO, ZERO), X_DIRECTION)),
+                        "chamferType" : ChamferType.EQUAL_OFFSETS,
+                        "width" : CART_BED_CH });
+        }
+        catch
+        {
+            reportFeatureWarning(context, id, "No se pudo achaflanar la base del cartucho; se puede imprimir igual.");
+        }
+
+        // ====================== 5c. FRONTAL (placa pegada con el QR y los LED) ======================
+        // Se imprime con la cara vista sobre la cama. Holgura de ajuste firme por lado respecto a su rebaje.
+        caja(context, id + "inlay",
+            vector(cx - inlayHalf + definition.fitFirm, D - INLAY_T, inlayZ0 + definition.fitFirm),
+            vector(cx + inlayHalf - definition.fitFirm, D, inlayZ1 - definition.fitFirm));
+        opFillet(context, id + "inlayFillet", {
+                    "entities" : qParallelEdges(qCreatedBy(id + "inlay", EntityType.EDGE), Y_DIRECTION),
+                    "radius" : max(inlayR - definition.fitFirm, 0.5 * millimeter) });
+        const inlayPoint = vector(cx, D - INLAY_T + 0.3 * millimeter, definition.qrZ);  // bajo el rebaje del QR
+        try silent
+        {
+            opChamfer(context, id + "inlayBedChamfer", {
+                        "entities" : qCoincidesWithPlane(qOwnedByBody(bodyAt(id, inlayPoint), EntityType.EDGE),
+                                                         plane(vector(ZERO, D, ZERO), Y_DIRECTION)),
+                        "chamferType" : ChamferType.EQUAL_OFFSETS,
+                        "width" : CART_BED_CH });
+        }
+        catch
+        {
+            reportFeatureWarning(context, id, "No se pudo achaflanar el canto del frontal; se puede imprimir igual.");
+        }
+        // Rebaje de la etiqueta QR
+        caja(context, id + "inlayCuts" + "qr",
+            vector(cx - qrHalf, D - definition.qrDepth, definition.qrZ - qrHalf),
+            vector(cx + qrHalf, D + 1 * millimeter, definition.qrZ + qrHalf));
+        opFillet(context, id + "inlayCuts" + "qrFillet", {
+                    "entities" : qParallelEdges(qCreatedBy(id + "inlayCuts" + "qr", EntityType.EDGE), Y_DIRECTION),
+                    "radius" : min(definition.qrR, qrHalf - 0.1 * millimeter) });
+        if (definition.leds)
+        {
+            for (var s in [-1, 1])
+            {
+                cylY(context, id + "inlayCuts" + ("led" ~ toString(s + 1)), cx + s * definition.ledS / 2, definition.ledZ,
+                     D - INLAY_T - 1 * millimeter, D + 1 * millimeter, definition.ledD / 2);
+            }
+        }
+        subtract(context, id + "doInlayCuts", bodyAt(id, inlayPoint), qCreatedBy(id + "inlayCuts", EntityType.BODY));
 
         // ====================== 6. TAPA TRASERA ======================
         const yBack = -definition.backT;
@@ -663,15 +759,16 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
 
         // ====================== 8. PIEZAS DE PRUEBA (opcional) ======================
         // Recortes de las piezas reales, en su sitio, para imprimir poco material y medir los ajustes:
-        //  0 "Prueba mecanismo":           ranura + camisa + guía + baldas del switch (con el Empujador real)
+        //  0 "Prueba encaje cartucho":     muesca del techo, pared frontal y nervio de apoyo del cuerpo
+        //    (el mecanismo se prueba con el Cartucho y el Empujador reales: son piezas pequeñas)
         //  1 "Prueba esquina inserto M3":  esquina inferior izquierda de la carcasa, últimos mm del tetón
         //  2 "Prueba paso USB":            trozo de la base con la abertura de la clavija
         //  3 "Prueba tapa y protoboard":   marco de la tapa con las 4 escuadras, soportes y avellanados inferiores
         var massInfo = "";
         if (definition.testMode)
         {
-            const xm = sleeveHalf + 1 * millimeter;
-            const zm0 = zSlotBottom - SLEEVE_T - 1 * millimeter;
+            const xm = sleeveHalf + definition.fitFirm + 2.5 * millimeter;
+            const zm0 = zCart0 - RIB_SUP_T - 1 * millimeter;
             // Corte de la esquina: si cae sobre una ranura de ventilación (o a menos de 0,8 mm), la incluye entera
             var xc1 = bIn + definition.bossR + 4 * millimeter;
             for (var o in [ventOff[1], ventOff[0]])
@@ -712,7 +809,7 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
             }
             // Cada pieza de prueba se identifica por un punto interior, entre los sólidos creados en este bloque
             // (no depende de a qué operación atribuya Onshape el resultado de la intersección)
-            const couponPts = [vector(cx + slotHalf + SLEEVE_T / 2, (ysB + ysF) / 2, zSlotBottom + 3 * millimeter),
+            const couponPts = [vector(cx, ysF + wallF / 2, zCart0 + 2 * millimeter),               // en la pared frontal
                                vector(bIn, definition.insertL + 2.5 * millimeter, bIn),   // en el tetón, pasado el inserto
                                vector(usbX + definition.usbOW / 2 + 1 * millimeter, usbY, wall / 2),
                                vector(cx, yBack / 2, zw0 / 2)];                          // franja inferior del marco, en el centro
@@ -725,7 +822,8 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
             subtract(context, id + "test" + "windowCut", coupon(3), qCreatedBy(id + "test" + "window", EntityType.BODY));
             // Se quitan las piezas completas
             opDeleteBodies(context, id + "test" + "delOrig", {
-                        "entities" : qSubtraction(qUnion([bodyAt(id, bodyPoint), bodyAt(id, backPoint)]), qCreatedBy(id + "test", EntityType.BODY)) });
+                        "entities" : qSubtraction(qUnion([bodyAt(id, bodyPoint), bodyAt(id, backPoint), bodyAt(id, inlayPoint)]),
+                                                  qCreatedBy(id + "test", EntityType.BODY)) });
 
             // Chaflán en las aristas de corte que apoyan en la cama (pata de elefante)
             const mechEdges = qOwnedByBody(coupon(0), EntityType.EDGE);
@@ -747,7 +845,7 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
                         qContainsPoint(frameEdges, vector(cx + xw, yBack, (zw0 + zw1) / 2)),
                         qContainsPoint(frameEdges, vector(cx + xw / 2, yBack, zw0)),
                         qContainsPoint(frameEdges, vector(cx + xw / 2, yBack, zw1))])];
-            const names = ["Prueba mecanismo", "Prueba esquina inserto M3", "Prueba paso USB", "Prueba tapa y protoboard"];
+            const names = ["Prueba encaje cartucho", "Prueba esquina inserto M3", "Prueba paso USB", "Prueba tapa y protoboard"];
             for (var t = 0; t < size(bedEdges); t += 1)
             {
                 try silent
@@ -766,7 +864,7 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
             {
                 setProperty(context, { "entities" : coupon(t), "propertyType" : PropertyType.NAME, "value" : names[t] });
             }
-            const grams = evVolume(context, { "entities" : qUnion([qCreatedBy(id + "test", EntityType.BODY), bodyAt(id, pushPoint)]) }) /
+            const grams = evVolume(context, { "entities" : qUnion([qCreatedBy(id + "test", EntityType.BODY), bodyAt(id, pushPoint), bodyAt(id, cartPoint)]) }) /
                           (centimeter ^ 3) * PETG_DENSITY;
             massInfo = "PIEZAS DE PRUEBA (" ~ toString(roundToPrecision(grams, 0)) ~ " g de PETG como mucho, al 100 % de relleno) · ";
         }
@@ -774,15 +872,23 @@ export const carcasaLlavesESP32 = defineFeature(function(context is Context, id 
         // ====================== 9. NOMBRES, EXPLOSIÓN E INFORME ======================
         if (!definition.testMode)
         {
-            setProperty(context, { "entities" : bodyAt(id, bodyPoint), "propertyType" : PropertyType.NAME, "value" : "Carcasa frontal" });
+            setProperty(context, { "entities" : bodyAt(id, bodyPoint), "propertyType" : PropertyType.NAME, "value" : "Cuerpo" });
             setProperty(context, { "entities" : bodyAt(id, backPoint), "propertyType" : PropertyType.NAME, "value" : "Tapa trasera" });
+            setProperty(context, { "entities" : bodyAt(id, inlayPoint), "propertyType" : PropertyType.NAME, "value" : "Frontal" });
         }
+        setProperty(context, { "entities" : bodyAt(id, cartPoint), "propertyType" : PropertyType.NAME, "value" : "Cartucho mecanismo" });
         setProperty(context, { "entities" : bodyAt(id, pushPoint), "propertyType" : PropertyType.NAME, "value" : "Empujador" });
         if (definition.explode > 0.01 * millimeter)
         {
             opTransform(context, id + "explode", {
                         "bodies" : bodyAt(id, backPoint),
                         "transform" : transform(vector(ZERO, -definition.explode, ZERO)) });
+            if (!definition.testMode)
+            {
+                opTransform(context, id + "explodeInlay", {
+                            "bodies" : bodyAt(id, inlayPoint),
+                            "transform" : transform(vector(ZERO, definition.explode, ZERO)) });
+            }
         }
         reportFeatureInfo(context, id, massInfo ~ "Exterior (ancho x fondo x alto): " ~ toString(roundToPrecision(W / millimeter, 1)) ~ " x " ~
                     toString(roundToPrecision((D + definition.backT) / millimeter, 1)) ~ " x " ~ toString(roundToPrecision(H / millimeter, 1)) ~
