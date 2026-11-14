@@ -27,16 +27,15 @@ void TelegramManager_wifi_reconnect(void);
 uint8_t TelegramManager_is_wifi_connected(void);
 
 /**
- * @brief Sends a message via the Telegram bot.
- * @param message The message to be sent as a C-style string.
- * @return 1U if the message was sent successfully, 0U otherwise.
+ * @brief Publica un mensaje en el canal, borrando antes el mensaje anterior.
+ * @param message Texto completo del mensaje, enviado tal cual en formato HTML.
+ * @return 1U si el mensaje se envió correctamente, 0U en caso contrario.
  */
 uint8_t TelegramManager_send_message(const char* message);
 
 /**
  * @brief Initializes the TelegramManager module.
- * @note This function sets the WiFi mode to station and connects to the WiFi network.
- *       It also sets the root certificate for secure communication with the Telegram API.
+ * @note Configura WiFi en modo estación, el certificado TLS y recupera de NVS el ID del último mensaje.
  */
 void TelegramManager_init(void);
 
