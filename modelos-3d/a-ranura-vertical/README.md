@@ -6,7 +6,7 @@ rodillo del microswitch KW12-3. Un tope en el empujador protege la palanca
 (margen de reposo de 1,5 mm sobre el clic y sobrecarrera de 0,8 mm).
 
 - Fuente: [`carcasa_llaves_esp32.fs`](carcasa_llaves_esp32.fs) (FeatureScript, Onshape)
-- Medidas exteriores con los valores por defecto: **47,3 × 46,4 × 90,1 mm** (ancho × fondo × alto)
+- Medidas exteriores con los valores por defecto: unos **47 × 48 × 90 mm** (ancho × fondo × alto, con el frontal)
 - Material de referencia: PETG, boquilla de 0,4 mm, capa de 0,2 mm
 - Montaje: dos ojales en la tapa trasera para colgarla en la pared
 
@@ -16,22 +16,36 @@ rodillo del microswitch KW12-3. Un tope en el empujador protege la palanca
 |---|---|---|---|
 | Cuerpo | Azul eléctrico | Cara frontal sobre la cama | No |
 | Cartucho mecanismo | Azul o blanco | Tumbado sobre su costado izquierdo | No (puentes ≤ 6,2 mm) |
-| Frontal | Blanco | Cara vista sobre la cama | No |
+| Frontal | Blanco | Cara trasera sobre la cama (cara vista arriba) | No |
 | Tapa trasera | Azul eléctrico | Cara de pared sobre la cama | No |
 | Empujador | Cualquiera | De pie, sobre la cara trasera del tope | No |
 
 **Montaje:** 1) insertos M3 en el cuerpo; 2) empujador en la guía y switch
 atornillado en el cartucho; 3) cartucho dentro del cuerpo por detrás hasta que
-apoye en el nervio, pegado; 4) frontal pegado y los LED desde dentro;
+apoye en el nervio, pegado; 4) frontal pegado sobre la cara frontal, centrado con 2 pasadores de filamento, y los LED desde dentro;
 5) protoboard en la tapa y tapa atornillada.
 
-> ✅ Compilada en Onshape el 2026-11-14: regenera sin errores ni avisos, con los
-> valores por defecto, en modo de pruebas y con tagW 26 / pared 2,4. Los chaflanes
-> se aplican. Falta comprobar interferencias entre piezas y exportar los STL:
-> los de `stl/pruebas/` son de la versión anterior, de 3 piezas.
->
-> Límite conocido: con la protoboard de 40 mm, el llavero puede medir como mucho
-> unos 27 mm de ancho, porque si no los postes de apriete chocan con el cartucho.
+## Auditoría automática de imprimibilidad (2026-11-14)
+
+Se hizo con FeatureScript en Onshape, pieza a pieza y en su orientación de impresión:
+normales de todas las caras, puentes, espesores mínimos, solapes entre piezas y
+la inserción del cartucho, simulada en pasos de 0,5 mm.
+
+| Pieza | Resultado |
+|---|---|
+| Cuerpo | ✅ Ventilación con puente de 1,6 mm; pasadores con puente de 1,9 mm. ⚠️ USB con puente de 13,5 mm, aceptado: un chaflán no deja pasar la clavija |
+| Cartucho | ✅ Puentes de 3,5 y 6,2 mm; espesor mínimo 1,2 mm |
+| Frontal | ✅ Sin voladizos con la cara vista hacia arriba; 0,8 mm sobre los pasadores |
+| Tapa trasera | ✅ Avellanados como puente circular con capa de sacrificio de 0,2 mm, que se perfora al montar |
+| Empujador | ✅ Sin voladizos; espesor mínimo 1,9 mm |
+| Montaje | ✅ Ningún solape entre las 10 parejas de piezas. El cartucho entra sin chocar, con 0,25 mm de holgura por lado y 0,2 mm hasta la tapa |
+
+Medidas exteriores con los valores por defecto: unos 47 × 48 × 90 mm, con el frontal.
+Límite conocido: con la protoboard de 40 mm, el llavero puede medir como mucho
+unos 27 mm de ancho.
+
+Montaje del frontal: corta 2 trozos de 1,6 mm de filamento de 1,75 mm y úsalos
+como pasadores para centrarlo antes de pegarlo.
 
 ## Revisión con las reglas de FDM de la versión de 3 piezas (2026-11-14)
 
