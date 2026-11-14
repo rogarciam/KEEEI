@@ -192,7 +192,7 @@ void loop() {
                 
                 mensaje_telegram_t msg;
                 strncpy(msg.texto, 
-                        "🟢 Llaves colocadas en el sensor.", 
+                        "🟢 <b>Hay alguien en el cubo.</b>", 
                         sizeof(msg.texto) - 1);
                 msg.texto[sizeof(msg.texto) - 1] = '\0';
                 msg.estado_sensor = 1U;
@@ -244,7 +244,7 @@ void loop() {
                 
                 mensaje_telegram_t msg;
                 strncpy(msg.texto, 
-                        "🔴 Llaves retiradas del sensor.", 
+                        "🔴 <b>No hay nadie en el cubo.</b>", 
                         sizeof(msg.texto) - 1);
                 msg.texto[sizeof(msg.texto) - 1] = '\0';
                 msg.estado_sensor = 0U;
