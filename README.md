@@ -73,9 +73,9 @@ repositorio y del documento de Onshape.
 
 <table>
 <tr>
-<td align="center" width="33%"><img src="docs/img/carcasa-a.png" height="200"><br><b>A · Ranura vertical</b><br>De pared, sobria, 5 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/a-ranura-vertical/modelos-3d/a-ranura-vertical">rama <code>carcasa/a-ranura-vertical</code></a></td>
-<td align="center" width="33%"><img src="docs/img/carcasa-b.png" height="200"><br><b>B · Canto rodado</b><br>Orgánica, se cuelga de una pletina, 6 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/b-organica/modelos-3d/b-organica">rama <code>carcasa/b-organica</code></a></td>
-<td align="center" width="33%"><img src="docs/img/carcasa-c.png" height="200"><br><b>C · Keko</b><br>Un robotito que se traga las llaves, de mesa, 9 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/c-mascota/modelos-3d/c-mascota">rama <code>carcasa/c-mascota</code></a></td>
+<td align="center" width="33%"><img src="docs/img/carcasa-a.gif" height="220"><br><b>A · Ranura vertical</b><br>De pared, sobria, 5 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/a-ranura-vertical/modelos-3d/a-ranura-vertical">rama <code>carcasa/a-ranura-vertical</code></a></td>
+<td align="center" width="33%"><img src="docs/img/carcasa-b.gif" height="220"><br><b>B · Canto rodado</b><br>Orgánica, se cuelga de una pletina, 6 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/b-organica/modelos-3d/b-organica">rama <code>carcasa/b-organica</code></a></td>
+<td align="center" width="33%"><img src="docs/img/carcasa-c.gif" height="220"><br><b>C · Keko</b><br>Un robotito que se traga las llaves, de mesa, 9 piezas.<br><a href="https://github.com/rogarciam/KEEEI/tree/carcasa/c-mascota/modelos-3d/c-mascota">rama <code>carcasa/c-mascota</code></a></td>
 </tr>
 </table>
 
