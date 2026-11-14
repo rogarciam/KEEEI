@@ -44,6 +44,12 @@ Medidas exteriores con los valores por defecto: unos 47 × 48 × 90 mm, con el f
 Límite conocido: con la protoboard de 40 mm, el llavero puede medir como mucho
 unos 27 mm de ancho.
 
+**STL** (exportados de Onshape el 2026-11-14, versión V3, en mm y colocados
+en la posición de montaje): `stl/cuerpo.stl`, `stl/cartucho-mecanismo.stl`,
+`stl/frontal.stl`, `stl/tapa-trasera.stl` y `stl/empujador.stl`. Gíralos en el
+laminador a la orientación de la tabla de piezas. Los de `stl/pruebas/` son de
+la versión anterior, de 3 piezas.
+
 Montaje del frontal: corta 2 trozos de 1,6 mm de filamento de 1,75 mm y úsalos
 como pasadores para centrarlo antes de pegarlo.
 
