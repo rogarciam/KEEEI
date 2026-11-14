@@ -21,6 +21,7 @@ alternativas se descartaron, aunque pase tiempo.
 | [0004](0004-licencias.md) | Licencias del repositorio | Propuesta |
 | [0005](0005-carcasa-a-modular.md) | Carcasa A: dividirla en módulos según la orientación de impresión | Aceptada |
 | [0006](0006-ramas-git-y-onshape.md) | Ramas de git y ramas de Onshape en paralelo | Aceptada |
+| [0008](0008-carcasa-c-mascota.md) | Carcasa C: mascota de sobremesa «Keko» | Propuesta |
 
 ## Plantilla
 
