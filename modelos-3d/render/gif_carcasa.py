@@ -37,6 +37,11 @@ PIEZAS = {  # nombre: (material, despiece x, y, z en mm)
     "peana": (NEGRO, (0, 0, -25)),
 }
 
+# Cada carcasa reparte los colores a su manera: KEEEI_COLORES="pieza=color,..."
+for par in filter(None, os.environ.get("KEEEI_COLORES", "").split(",")):
+    pieza, color = par.split("=")
+    PIEZAS[pieza] = (color, PIEZAS.get(pieza, (None, (0, 0, 0)))[1])
+
 bpy.ops.wm.read_factory_settings(use_empty=True)
 scene = bpy.context.scene
 
@@ -114,7 +119,8 @@ for ob in objs:
 
 cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam"))
 cam.data.lens = 70
-cam.location = centro + Vector((0.0, 1.0, 0.32)).normalized() * tam * 4.3
+DIST = float(os.environ.get("KEEEI_DIST", "4.3"))  # distancia de cámara en tamaños de pieza
+cam.location = centro + Vector((0.0, 1.0, 0.32)).normalized() * tam * DIST
 scene.collection.objects.link(cam)
 tc = cam.constraints.new("TRACK_TO")
 tc.target = pivote
