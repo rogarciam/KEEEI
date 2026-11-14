@@ -1,0 +1,35 @@
+# Registro de decisiones (ADR)
+
+Cada decisión importante del proyecto KEEEI se apunta aquí en un archivo corto
+numerado (`NNNN-titulo.md`). Así se sabe **qué** se decidió, **por qué** y qué
+alternativas se descartaron, aunque pase tiempo.
+
+| Estado | Significado |
+|---|---|
+| Propuesta | Pendiente de aprobar |
+| Aceptada | En vigor |
+| Sustituida | Reemplazada por otra ADR (se indica cuál) |
+| Descartada | Se valoró y no se hará |
+
+## Índice
+
+| Nº | Decisión | Estado |
+|---|---|---|
+| [0001](0001-mensajes-hay-alguien-en-el-cubo.md) | Mensajes del canal: «Hay / No hay nadie en el cubo» | Aceptada |
+| [0002](0002-canal-sin-bot-con-mensaje-fijado.md) | Canal de Telegram sin bot, con mensaje fijado | Aceptada |
+| [0003](0003-ramas-para-opciones-de-carcasa.md) | Una rama por opción de carcasa | Aceptada |
+| [0004](0004-licencias.md) | Licencias del repositorio | Propuesta |
+
+## Plantilla
+
+```markdown
+# NNNN. Título
+
+- Estado: Propuesta | Aceptada | Sustituida por NNNN | Descartada
+- Fecha: AAAA-MM-DD
+
+## Contexto
+## Decisión
+## Alternativas descartadas
+## Consecuencias
+```
