@@ -8,6 +8,10 @@
 # ifndef LED_MANAGER_H
 # define LED_MANAGER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdbool.h>
 
@@ -21,6 +25,7 @@ typedef enum {
     LED_MODE_BLINKING_GREEN,
     LED_MODE_BLINKING_RED,
     LED_MODE_BLINKING_BOTH,
+    LED_MODE_SLOW_BLINKING_BOTH,
 } led_mode_t;
 
 /**
@@ -45,4 +50,9 @@ void led_manager_set_mode(led_mode_t mode);
  * @param current_time_ms Marca de tiempo actual en milisegundos.
  */
 void led_manager_update(uint32_t current_time_ms);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // LED_MANAGER_H
