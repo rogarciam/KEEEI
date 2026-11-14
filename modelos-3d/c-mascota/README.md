@@ -8,6 +8,7 @@ Tiene esas formas sencillas (bloque, ojos y antenas) para que se reconozca de le
 imprimir sin soportes.
 
 - Fuente: [`carcasa_c.fs`](carcasa_c.fs) (FeatureScript 3112, feature `carcasaKeeeiC`)
+- Onshape: Feature Studio «Carcasa C» (eid `e88b5fa6c0eeabe6c83a1ad5`) en la rama «Carcasa C» del documento. Tiene el mismo código sin los comentarios
 - Colores: **azul eléctrico** en el cuerpo, la tapa y la peana; **blanco** en la cara, la barriga, las orejas y el cartucho
 - Material de referencia: PETG, boquilla de 0,4 mm, capa de 0,2 mm
 - Medidas con los valores por defecto: cuerpo de 47,3 × 50,0 × 90,1 mm; peana de 59,3 × 69,2 mm; **alto total de unos 118 mm**
